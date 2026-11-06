@@ -21,8 +21,6 @@ Ticket → legal/emergency? → human
 | [src/types.ts](src/types.ts) | Shared types (`Ticket`, `CheckFailure`) |
 | [src/checks.ts](src/checks.ts) | Rule-based checks: length, banned promises, card numbers |
 | [src/try-checks.ts](src/try-checks.ts) | Runs the checks against sample drafts |
-| [Loop-engineering-insurance.md](Loop-engineering-insurance.md) | Short design: rules, knowledge base, tickets, checks, stop conditions |
-| [prd.md](prd.md) | Broader design for a support-ticket triage loop |
 
 ## Getting started
 

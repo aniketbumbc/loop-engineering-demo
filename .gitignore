@@ -1,0 +1,29 @@
+# Dependencies
+node_modules/
+
+# Build output
+dist/
+build/
+*.tsbuildinfo
+
+# Logs
+*.log
+npm-debug.log*
+
+# Environment / secrets
+.env
+.env.*
+!.env.example
+
+# Loop output queues (generated)
+ready-to-send/
+needs-human/
+
+# OS / editor
+.DS_Store
+.vscode/
+.idea/
+
+# Design notes (kept local)
+prd.md
+Loop-engineering-insurance.md

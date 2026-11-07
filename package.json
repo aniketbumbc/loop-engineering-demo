@@ -4,7 +4,9 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "agent": "tsx --env-file=.env src/try-agent.ts",
+    "checks": "tsx src/try-checks.ts"
   },
   "keywords": [],
   "author": "",

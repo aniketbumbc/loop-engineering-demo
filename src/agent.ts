@@ -16,34 +16,11 @@ Return only the reply text.
 KNOWLEDGE BASE:
 ${KNOWLEDGE_BASE}`;
 
-// Shape of the parts of the Chat Completions response we read.
-interface ChatCompletionResponse {
-  choices?: {
-    message?: { content?: string | null };
-    finish_reason?: string;
-  }[];
-}
-
-// A fake agent for testing the loop without an API key.
-// First attempt breaks a rule on purpose; once it gets feedback, it fixes the draft.
-export class FakeAgent implements Agent {
-  async draft(
-    _ticket: Ticket,
-    feedback: string[],
-    _previousDraft?: string,
-  ): Promise<string> {
-    if (feedback.length === 0) {
-      return 'Hello, send us the claim form and hospital bills. Your claim is guaranteed.';
-    }
-    return 'Hello, for a health claim please send the claim form, hospital bills, and the discharge summary.';
-  }
-}
-
 // The real agent: calls OpenAI through the Chat Completions API.
 export class OpenAIAgent implements Agent {
   constructor(
     private apiKey = process.env.OPENAI_API_KEY ?? '',
-    private model = process.env.OPENAI_MODEL ?? 'gpt-6-luna',
+    private model = process.env.OPENAI_MODEL ?? 'gpt-5-nano',
   ) {
     if (!this.apiKey) throw new Error('Set OPENAI_API_KEY before running.');
   }
@@ -82,13 +59,13 @@ export class OpenAIAgent implements Agent {
     if (!res.ok)
       throw new Error(`OpenAI API error ${res.status}: ${await res.text()}`);
 
-    const data = (await res.json()) as ChatCompletionResponse;
+    const data: any = await res.json();
     const choice = data.choices?.[0];
     const text: string = (choice?.message?.content ?? '').trim();
     if (!text)
       throw new Error(
         `Empty reply (finish_reason: ${choice?.finish_reason}). Try a larger max_completion_tokens.`,
       );
-    return text;
+    return 'AI TEXT ' + text;
   }
 }

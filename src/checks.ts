@@ -25,11 +25,11 @@ export function runChecks(draft: string): CheckFailure[] {
     }
   }
 
-  // Check 3: no card number (4 to 5 digits, spaces or dashes allowed)
-  if (/\b(?:\d[ -]?){4,5}\b/.test(draft)) {
+  // Check 3: no card number (13 to 19 digits, spaces or dashes allowed)
+  if (/\b\d(?:[ -]?\d){12,18}\b/.test(draft)) {
     failures.push({
       check: 'card',
-      feedback: 'Remove the card number It need be between 4 and 5 digits.',
+      feedback: 'Remove the card number. Never repeat card details.',
     });
   }
 

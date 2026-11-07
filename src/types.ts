@@ -8,3 +8,11 @@ export interface CheckFailure {
   check: string;
   feedback: string;
 }
+
+export interface Agent {
+  draft(
+    ticket: Ticket,
+    feedback: string[],
+    previousDraft?: string,
+  ): Promise<string>;
+}

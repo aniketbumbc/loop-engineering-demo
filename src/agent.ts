@@ -66,6 +66,6 @@ export class OpenAIAgent implements Agent {
       throw new Error(
         `Empty reply (finish_reason: ${choice?.finish_reason}). Try a larger max_completion_tokens.`,
       );
-    return 'AI TEXT ' + text;
+    return text;
   }
 }

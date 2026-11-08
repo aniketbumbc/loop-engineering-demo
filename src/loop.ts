@@ -17,6 +17,11 @@ export type LoopResult =
       error?: string;
     };
 
+// Sorted, de-duplicated check names, e.g. "length,promise", so two attempts can be compared.
+function failedChecks(failures: CheckFailure[]): string {
+  return [...new Set(failures.map((f) => f.check))].sort().join(',');
+}
+
 export async function runLoop(
   agent: Agent,
   ticket: Ticket,
@@ -49,12 +54,9 @@ export async function runLoop(
     // 3. Passed: done
     if (failures.length === 0) return { status: 'ready', draft, attempts };
 
-    // 4. Stop early if the same check failed in the previous attempt too
+    // 4. Stop early if the exact same set of checks failed in the previous attempt too
     const last = attempts[attempts.length - 2];
-    if (
-      last &&
-      failures.some((f) => last.failures.some((p) => p.check === f.check))
-    ) {
+    if (last && failedChecks(last.failures) === failedChecks(failures)) {
       return { status: 'needs_human', reason: 'no_progress', attempts };
     }
 

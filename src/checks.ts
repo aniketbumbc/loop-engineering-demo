@@ -13,13 +13,21 @@ const BANNED: { label: string; pattern: RegExp }[] = [
   { label: 'certain outcome', pattern: /\b(definitely|certainly|surely)\s+(get|receive)\b/i },
 ];
 
+// Secrets the agent must never echo back.
+const SECRETS: RegExp[] = [
+  // A 3-8 digit code shortly after a code keyword: "your OTP is 482913", "CVV: 123"
+  /\b(otp|one[- ]time password|pin|cvv|passcode|verification code)\b\D{0,20}\d{3,8}\b/i,
+  // A password value containing a digit or symbol: "password is hunter2", "password: Pa$$word"
+  /\b(password|passcode)\s*(?:is|was|:|=)\s*["'`]?(?=\S*[\d@#$%^&*!])\S{4,}/i,
+];
+
 // Returns an empty array if the draft passes. Otherwise one entry per failed check.
 export function runChecks(draft: string): CheckFailure[] {
   const failures: CheckFailure[] = [];
 
   // Check 1: under 150 words
   const words = draft.trim().split(/\s+/).length;
-  if (words > 150) {
+  if (words >= 150) {
     failures.push({
       check: 'length',
       feedback: `Reply is ${words} words. Keep it under 150.`,
@@ -43,6 +51,18 @@ export function runChecks(draft: string): CheckFailure[] {
       check: 'card',
       feedback: 'Remove the card number. Never repeat card details.',
     });
+  }
+
+  // Check 4: no OTPs, PINs, CVVs or passwords
+  for (const pattern of SECRETS) {
+    const match = draft.match(pattern);
+    if (match) {
+      failures.push({
+        check: 'secret',
+        feedback: `Remove "${match[0]}". Never repeat OTPs, PINs, CVVs or passwords.`,
+      });
+      break; // one secret failure is enough feedback
+    }
   }
 
   return failures;

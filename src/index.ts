@@ -11,7 +11,12 @@ const tickets: Ticket[] = [
 ];
 
 (async () => {
-  resetQueues();
+  // Queues persist across runs so pending human work is never lost.
+  // Pass --reset to start from empty queues on purpose.
+  if (process.argv.includes('--reset')) {
+    resetQueues();
+    console.log('Queues reset.');
+  }
   const agent = new OpenAIAgent();
 
   for (const ticket of tickets) {

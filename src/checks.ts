@@ -1,6 +1,17 @@
 import { CheckFailure } from './types';
 
-const BANNED = ['guaranteed', 'will be approved'];
+// Patterns that promise an outcome. Regexes catch variations like
+// "will definitely be approved", "guarantee", "100% covered".
+const BANNED: { label: string; pattern: RegExp }[] = [
+  { label: 'guarantee', pattern: /\bguarantee[ds]?\b/i },
+  {
+    label: 'promised approval/payment',
+    pattern:
+      /\b(will|is|are|has been|have been)\s+(definitely\s+|surely\s+|certainly\s+|always\s+)?(be\s+)?(approved|paid|covered|accepted|settled|reimbursed)\b/i,
+  },
+  { label: '100% / fully covered', pattern: /\b(100\s?%|fully|completely)\s+(covered|reimbursed|paid)\b/i },
+  { label: 'certain outcome', pattern: /\b(definitely|certainly|surely)\s+(get|receive)\b/i },
+];
 
 // Returns an empty array if the draft passes. Otherwise one entry per failed check.
 export function runChecks(draft: string): CheckFailure[] {
@@ -16,11 +27,12 @@ export function runChecks(draft: string): CheckFailure[] {
   }
 
   // Check 2: no promises
-  for (const phrase of BANNED) {
-    if (draft.toLowerCase().includes(phrase)) {
+  for (const { pattern } of BANNED) {
+    const match = draft.match(pattern);
+    if (match) {
       failures.push({
         check: 'promise',
-        feedback: `Remove "${phrase}". Never promise an outcome.`,
+        feedback: `Remove "${match[0]}". Never promise an outcome.`,
       });
     }
   }
